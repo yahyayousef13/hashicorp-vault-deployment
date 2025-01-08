@@ -1,0 +1,26 @@
+pipeline {
+  agent any
+  stages {
+    stage('Clone Repository') {
+      steps {
+        git 'https://github.com/<username>/hashicorp-vault-deployment.git'
+      }
+    }
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t hashicorp-vault:latest ./docker'
+      }
+    }
+    stage('Push to JFrog') {
+      steps {
+        sh 'docker push <jfrog-url>/hashicorp-vault:latest'
+      }
+    }
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh 'kubectl apply -f k8s/vault-deployment.yaml'
+        sh 'kubectl apply -f k8s/vault-service.yaml'
+      }
+    }
+  }
+}
