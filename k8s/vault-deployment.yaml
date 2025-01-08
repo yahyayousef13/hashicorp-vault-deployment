@@ -14,6 +14,16 @@ spec:
     spec:
       containers:
       - name: vault
-        image: hashicorp/vault:latest
+        image: trial4w4crx.jfrog.io/docker-vault-repo/vault-server:latest
         ports:
         - containerPort: 8200
+        env:
+        - name: VAULT_ADDR
+          value: "http://127.0.0.1:8200"
+        volumeMounts:
+        - name: vault-config
+          mountPath: /etc/vault.d
+      volumes:
+      - name: vault-config
+        configMap:
+          name: vault-config

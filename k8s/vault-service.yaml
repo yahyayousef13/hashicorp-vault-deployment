@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: vault-service
 spec:
-  type: LoadBalancer
-  ports:
-  - port: 8200
-    targetPort: 8200
   selector:
     app: vault
+  ports:
+  - protocol: TCP
+    port: 8200
+    targetPort: 8200
+  type: NodePort # Use LoadBalancer for cloud environments if required
