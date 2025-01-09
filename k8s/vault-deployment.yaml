@@ -27,3 +27,5 @@ spec:
       - name: vault-config
         configMap:
           name: vault-config
+      imagePullSecrets:
+      - name: jfrog-registry-secret
