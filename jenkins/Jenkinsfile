@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         // Artifactory Docker repository details
-        DOCKER_REGISTRY = "jfrog.artifactory.com"
-        DOCKER_REPO = "myrepo"
-        IMAGE_NAME = "my-app"
+        DOCKER_REGISTRY = "https://trial4w4crx.jfrog.io"
+        DOCKER_REPO = "vault-repo"
+        IMAGE_NAME = "vault-server"
         IMAGE_TAG = "latest"
         
         // Vault URL for secrets (adjust based on your setup)
@@ -13,7 +13,7 @@ pipeline {
         
         // Kubernetes config
         K8S_NAMESPACE = "default"
-        K8S_DEPLOYMENT_NAME = "my-app"
+        K8S_DEPLOYMENT_NAME = "vault"
     }
 
     stages {
