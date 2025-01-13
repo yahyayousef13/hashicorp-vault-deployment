@@ -1,72 +1,26 @@
 pipeline {
-    agent any
-
-    environment {
-        // Artifactory Docker repository details
-        DOCKER_REGISTRY = "jfrog.artifactory.com"
-        DOCKER_REPO = "myrepo"
-        IMAGE_NAME = "my-app"
-        IMAGE_TAG = "latest"
-        
-        // Vault URL for secrets (adjust based on your setup)
-        VAULT_ADDR = "http://vault-service:8200"
-        
-        // Kubernetes config
-        K8S_NAMESPACE = "default"
-        K8S_DEPLOYMENT_NAME = "my-app"
+  agent any
+  stages {
+    stage('Clone Repository') {
+      steps {
+        git 'https://github.com/<username>/hashicorp-vault-deployment.git'
+      }
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout the code from GitHub
-                git credentialsId: 'github-credentials-id', url: 'https://github.com/Ashishm96/hashicorp-vault-deployment.git'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build the Docker image
-                    def appImage = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}")
-                }
-            }
-        }
-
-        stage('Push Docker Image to Artifactory') {
-            steps {
-                script {
-                    // Push the Docker image to Artifactory
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'jfrog-credentials-id') {
-                        appImage.push()
-                    }
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    // Ensure kubectl is configured to point to your cluster
-                    sh "kubectl config use-context minikube"
-                    sh "kubectl set image deployment/${K8S_DEPLOYMENT_NAME} ${K8S_DEPLOYMENT_NAME}=${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG} --namespace=${K8S_NAMESPACE}"
-                }
-            }
-        }
-
-        stage('Health Check') {
-            steps {
-                script {
-                    // Verify the deployment is successful
-                    sh "kubectl rollout status deployment/${K8S_DEPLOYMENT_NAME} --namespace=${K8S_NAMESPACE}"
-                }
-            }
-        }
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t hashicorp-vault:latest ./docker'
+      }
     }
-
-    post {
-        always {
-            echo 'Pipeline completed.'
-        }
+    stage('Push to JFrog') {
+      steps {
+        sh 'docker push <jfrog-url>/hashicorp-vault:latest'
+      }
     }
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh 'kubectl apply -f k8s/vault-deployment.yaml'
+        sh 'kubectl apply -f k8s/vault-service.yaml'
+      }
+    }
+  }
 }
