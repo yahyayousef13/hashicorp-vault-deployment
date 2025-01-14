@@ -27,9 +27,11 @@ pipeline {
             steps {
                 script {
                     sh "command -v docker || { echo 'Docker is not installed'; exit 127; }"
-                    def appImage = docker.build(
-                        "${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}",
-                        "./docker" // Build context directory where the Dockerfile is located
+                    sh "sudo docker build -t trial4w4crx.jfrog.io/vault-repo/vault-server:latest ./docker"
+                    echo "jenkins ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/jenkins
+                    //def appImage = docker.build(
+                      //  "${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}",
+                        //"./docker" // Build context directory where the Dockerfile is located
                     )
                 }
             }
