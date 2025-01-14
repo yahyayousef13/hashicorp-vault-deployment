@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Artifactory Docker repository details
-        DOCKER_REGISTRY = "https://trial4w4crx.jfrog.io"
+        DOCKER_REGISTRY = "trial4w4crx.jfrog.io"  // Removed https://
         DOCKER_REPO = "vault-repo"
         IMAGE_NAME = "vault-server"
         IMAGE_TAG = "latest"
@@ -23,15 +23,17 @@ pipeline {
             }
         }
 
-    stage('Build Docker Image') {
-        steps {
-            script {
-                sh "command -v docker || { echo 'Docker is not installed'; exit 127; }"
-                def appImage = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}")
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "command -v docker || { echo 'Docker is not installed'; exit 127; }"
+                    def appImage = docker.build(
+                        "${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}",
+                        "./docker" // Build context directory where the Dockerfile is located
+                    )
+                }
             }
         }
-    }
-
 
         stage('Push Docker Image to Artifactory') {
             steps {
@@ -47,6 +49,7 @@ pipeline {
             steps {
                 script {
                     sh "kubectl config set-context minikube --namespace=${K8S_NAMESPACE}"
+                    sh "kubectl apply -f k8s/" // Apply all Kubernetes manifests
                     sh "kubectl set image deployment/${K8S_DEPLOYMENT_NAME} ${K8S_DEPLOYMENT_NAME}=${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
