@@ -10,6 +10,9 @@ pipeline {
         
         // Vault URL for secrets (adjust based on your setup)
         VAULT_ADDR = "http://vault-service:8200"
+        //Credentials IDs for Jenkins
+        GITHUB_CREDENTIALS_ID = "github-credentials-id"
+        JFROG_CREDENTIALS_ID = "jfrog-credentials-id"
         
         // Kubernetes config
         K8S_NAMESPACE = "default"
