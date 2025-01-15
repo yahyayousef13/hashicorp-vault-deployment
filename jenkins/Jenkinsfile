@@ -38,6 +38,7 @@ pipeline {
         stage('Push Docker Image to Artifactory') {
             steps {
                 script {
+                    sh "docker images"
                     docker.withRegistry("https://${DOCKER_REGISTRY}", 'jfrog-credentials-id') {
                         sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}"
                     }
