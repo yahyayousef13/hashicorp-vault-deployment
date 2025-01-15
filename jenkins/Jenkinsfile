@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     sh "command -v docker || { echo 'Docker is not installed'; exit 127; }"
-                    sh "sudo docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG} ./docker"
+                    sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG} ./docker"
                 }
             }
         }
@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://${DOCKER_REGISTRY}", 'jfrog-credentials-id') {
-                        sh "sudo docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}"
+                        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
             }
